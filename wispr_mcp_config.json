@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "wispr-mcp": {
+      "command": "python",
+      "args": ["/Users/pedram/Projects/WisprMCP/mcp_server.py"],
+      "cwd": "/Users/pedram/Projects/WisprMCP"
+    }
+  }
+}
