@@ -1,24 +1,37 @@
 """
-ASCII table formatting for CLI output.
+Table formatting for CLI output with Rich support.
 """
 
 from typing import List, Dict, Any, Optional
 from .colors import Colors
 
+# Try to import Rich for beautiful tables
+try:
+    from rich.console import Console
+    from rich.table import Table
+    from rich.text import Text
+    RICH_AVAILABLE = True
+    console = Console()
+except ImportError:
+    RICH_AVAILABLE = False
+    console = None
+
 
 class TableFormatter:
-    """Simple ASCII table formatter."""
+    """Table formatter with Rich support fallback to ASCII."""
     
-    def __init__(self, headers: List[str], max_width: Optional[int] = None):
+    def __init__(self, headers: List[str], max_width: Optional[int] = None, use_rich: bool = True):
         """
         Initialize table formatter.
         
         Args:
             headers: Column headers
             max_width: Maximum table width (auto-detects terminal width if None)
+            use_rich: Whether to use Rich formatting when available
         """
         self.headers = headers
         self.max_width = max_width or self._get_terminal_width()
+        self.use_rich = use_rich and RICH_AVAILABLE
         self.rows: List[List[str]] = []
     
     def _get_terminal_width(self) -> int:
@@ -110,6 +123,62 @@ class TableFormatter:
         if not self.rows:
             return ""
         
+        if self.use_rich:
+            try:
+                return self._format_rich()
+            except Exception as e:
+                # Fallback to ASCII if Rich fails
+                return self._format_ascii()
+        else:
+            return self._format_ascii()
+    
+    def _format_rich(self) -> str:
+        """Format using Rich library."""
+        from rich.box import SIMPLE
+        table = Table(show_header=True, header_style="bold blue", box=SIMPLE)
+        
+        # Add columns with simpler styling
+        for header in self.headers:
+            if "Time" in header:
+                table.add_column(header, style="dim")
+            elif "App" in header:
+                table.add_column(header, style="cyan")
+            elif "Status" in header:
+                table.add_column(header, style="yellow")
+            elif "Words" in header or "Entries" in header:
+                table.add_column(header, style="green", justify="right")
+            elif "Duration" in header:
+                table.add_column(header, style="magenta", justify="right")
+            else:
+                table.add_column(header)
+        
+        # Add rows
+        for row in self.rows:
+            # Clean up ANSI codes from cells since Rich will handle styling
+            clean_row = []
+            for cell in row:
+                clean_cell = self._strip_ansi(str(cell))
+                clean_row.append(clean_cell)
+            table.add_row(*clean_row)
+        
+        # Use the global console to render
+        from io import StringIO
+        import sys
+        
+        # Capture output
+        old_stdout = sys.stdout
+        sys.stdout = captured_output = StringIO()
+        
+        try:
+            console.print(table)
+            result = captured_output.getvalue()
+        finally:
+            sys.stdout = old_stdout
+        
+        return result.rstrip()
+    
+    def _format_ascii(self) -> str:
+        """Format using ASCII table (fallback)."""
         widths = self._calculate_column_widths()
         
         lines = []
