@@ -71,13 +71,31 @@ WisprMCP provides programmatic access to your Wispr Flow local database, enablin
 
 ## Installation
 
+### Prerequisites
+
+- **Python 3.8+** (Python 3.9+ recommended)
+- **Wispr Flow** installed and running on macOS
+- **Git** for cloning the repository
+
 ### Quick Install
 
 ```bash
-# Clone and install
+# Clone the repository
 git clone https://github.com/pedram/WisprMCP.git
 cd WisprMCP
+
+# Install the package
 pip install -e .
+
+# Verify installation
+wispr --help
+```
+
+### PyPI Install (if published)
+
+```bash
+# Install from PyPI (when available)
+pip install wispr-mcp
 
 # Verify installation
 wispr --help
@@ -86,14 +104,56 @@ wispr --help
 ### Development Install
 
 ```bash
-# Install with development dependencies
+# Clone and install with development dependencies
+git clone https://github.com/pedram/WisprMCP.git
+cd WisprMCP
 pip install -e ".[dev]"
 
-# Run tests
+# Run tests to verify setup
 pytest
 
 # Format code
 black wispr_mcp/
+
+# Type checking
+mypy wispr_mcp/
+```
+
+### Virtual Environment (Recommended)
+
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On macOS/Linux:
+source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
+
+# Install WisprMCP
+pip install -e .
+```
+
+### System Requirements
+
+- **macOS**: Primary platform (where Wispr Flow runs)
+- **Database**: Wispr Flow must be installed and have created transcripts
+- **Permissions**: Read access to `~/Library/Application Support/Wispr Flow/flow.sqlite`
+
+### Verification
+
+After installation, verify everything works:
+
+```bash
+# Check CLI is working
+wispr --help
+
+# Test database access
+wispr stats
+
+# Test basic functionality
+wispr list --limit 5
 ```
 
 ## Configuration

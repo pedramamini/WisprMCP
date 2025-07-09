@@ -17,10 +17,9 @@ setup(
     packages=find_packages(),
     python_requires=">=3.12",
     install_requires=[
-        # Zero external dependencies - using only Python standard library
+        "rich>=10.0.0",
     ],
     extras_require={
-        "rich": ["rich>=10.0.0"],
         "dev": [
             "pytest>=7.0.0",
             "pytest-cov>=4.0.0",

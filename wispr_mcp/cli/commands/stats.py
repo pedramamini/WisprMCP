@@ -4,7 +4,10 @@ Stats command for WisprMCP CLI.
 
 import argparse
 import json
-from typing import Dict, Any
+from typing import Dict, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from rich.panel import Panel
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -193,7 +196,7 @@ class StatsCommand:
         # Render
         dashboard_console.print(layout)
     
-    def _create_overview_panel(self, stats: Dict[str, Any], entries: list) -> Panel:
+    def _create_overview_panel(self, stats: Dict[str, Any], entries: list) -> "Panel":
         """Create overview statistics panel."""
         table = Table.grid(padding=1)
         table.add_column(style="bold cyan", no_wrap=True)
